@@ -113,10 +113,10 @@ class PDFToAudioConverter:
             if translate:
                 text = await self.translate_text(text)
 
-            base_filename = os.path.splitext(os.path.basename(pdf_path))[0]
-            output_audio = f"{base_filename}.mp3"
+            output_audio = os.path.splitext(pdf_path)[0] + ".mp3"
 
-            print(f"🎯 Arquivo de áudio será salvo como: {output_audio}")
+            print(
+                f"🎯 Arquivo de áudio será salvo como: {os.path.basename(output_audio)}")
 
             await self.text_to_speech(text, output_audio)
 
