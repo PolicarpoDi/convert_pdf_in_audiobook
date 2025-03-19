@@ -151,30 +151,14 @@ if uploaded_file is not None:
                 status_text = "Parado" if not st.session_state.audio_playing else "Reproduzindo"
                 st.markdown(f"**Status:** {status_emoji} {status_text}")
 
-                # Player de áudio (sempre visível)
+                # Player de áudio
                 st.markdown("### 🔊 Player de Áudio")
                 st.audio(
                     st.session_state.audio_path,
                     format="audio/mp3",
                     start_time=0,
-                    loop=False,
-                    autoplay=st.session_state.audio_playing
+                    loop=False
                 )
-
-                # Controles de reprodução
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    if not st.session_state.audio_playing:
-                        if st.button("▶️ Iniciar Reprodução", use_container_width=True):
-                            st.session_state.audio_playing = True
-                            st.experimental_rerun()
-
-                with col2:
-                    if st.session_state.audio_playing:
-                        if st.button("⏹️ Parar Reprodução", use_container_width=True):
-                            st.session_state.audio_playing = False
-                            st.experimental_rerun()
             else:
                 st.error("❌ Erro ao gerar o arquivo de áudio")
 
