@@ -4,6 +4,7 @@ deep-translator==1.11.4  # Biblioteca para tradução
 edge-tts==7.0.0  # Biblioteca para text-to-speech
 pydub==0.25.1  # Biblioteca para manipulação de áudio
 tqdm==4.67.1  # Biblioteca para barras de progresso
+streamlit==1.32.0  # Framework para interface web
 
 # Dependências indiretas
 asyncio==3.4.3  # Para operações assíncronas
