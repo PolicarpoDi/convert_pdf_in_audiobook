@@ -120,9 +120,6 @@ class PDFToAudioConverter:
 
             await self.text_to_speech(text, output_audio)
 
-            print("🎧 Reproduzindo áudio...")
-            await self.play_audio(output_audio)
-
             end_time = time.time()
             print(
                 f"⏱️ Tempo total de processamento: {end_time - start_time:.2f} segundos")
