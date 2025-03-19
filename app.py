@@ -14,6 +14,14 @@ st.set_page_config(
     layout="wide"
 )
 
+# Inicializar variáveis de estado
+if 'audio_playing' not in st.session_state:
+    st.session_state.audio_playing = False
+if 'current_audio' not in st.session_state:
+    st.session_state.current_audio = None
+if 'audio_path' not in st.session_state:
+    st.session_state.audio_path = None
+
 # Título e descrição
 st.title("🎧 Conversor de PDF para Áudio")
 st.markdown("""
@@ -102,6 +110,8 @@ if uploaded_file is not None:
                 if os.path.exists(output_audio):
                     # Carregar o áudio
                     audio = AudioSegment.from_file(output_audio)
+                    st.session_state.audio_path = output_audio
+                    st.session_state.current_audio = audio
 
                     # Exibir informações do áudio
                     st.info(f"""
@@ -109,9 +119,6 @@ if uploaded_file is not None:
                         - Duração: {len(audio) / 1000:.2f} segundos
                         - Tamanho: {os.path.getsize(output_audio) / 1024:.2f} KB
                     """)
-
-                    # Player de áudio
-                    st.audio(output_audio)
 
                     # Botão para download
                     with open(output_audio, "rb") as file:
@@ -133,6 +140,28 @@ if uploaded_file is not None:
                 os.unlink(pdf_path)
             except:
                 pass
+
+    # Área de controle de áudio
+    if st.session_state.current_audio is not None:
+        st.markdown("### 🎵 Controle de Áudio")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if not st.session_state.audio_playing:
+                if st.button("▶️ Reproduzir Áudio"):
+                    st.session_state.audio_playing = True
+                    st.experimental_rerun()
+
+        with col2:
+            if st.session_state.audio_playing:
+                if st.button("⏹️ Parar Áudio"):
+                    st.session_state.audio_playing = False
+                    st.experimental_rerun()
+
+        # Player de áudio (só aparece se estiver reproduzindo)
+        if st.session_state.audio_playing:
+            st.audio(st.session_state.audio_path)
 
 # Footer
 st.markdown("---")
