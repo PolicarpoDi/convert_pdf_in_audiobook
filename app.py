@@ -102,34 +102,56 @@ if uploaded_file is not None:
 
                 # Processar o PDF
                 asyncio.run(converter.process_pdf(
-                    pdf_path, translate=translate))
+                    pdf_path,
+                    translate=translate,
+                    original_filename=uploaded_file.name
+                ))
+
+            # Verificar se o arquivo de áudio foi criado
+            if os.path.exists(output_audio):
+                # Carregar o áudio
+                audio = AudioSegment.from_file(output_audio)
+                st.session_state.audio_path = output_audio
+                st.session_state.current_audio = audio
 
                 st.success("✅ Conversão concluída com sucesso!")
 
-                # Verificar se o arquivo de áudio foi criado
-                if os.path.exists(output_audio):
-                    # Carregar o áudio
-                    audio = AudioSegment.from_file(output_audio)
-                    st.session_state.audio_path = output_audio
-                    st.session_state.current_audio = audio
+                # Exibir informações do áudio
+                st.info(f"""
+                    📊 Informações do áudio:
+                    - Duração: {len(audio) / 1000:.2f} segundos
+                    - Tamanho: {os.path.getsize(output_audio) / 1024:.2f} KB
+                """)
 
-                    # Exibir informações do áudio
-                    st.info(f"""
-                        📊 Informações do áudio:
-                        - Duração: {len(audio) / 1000:.2f} segundos
-                        - Tamanho: {os.path.getsize(output_audio) / 1024:.2f} KB
-                    """)
+                # Botão para download
+                with open(output_audio, "rb") as file:
+                    st.download_button(
+                        label="📥 Download do áudio",
+                        data=file,
+                        file_name=f"{base_filename}.mp3",
+                        mime="audio/mp3"
+                    )
 
-                    # Botão para download
-                    with open(output_audio, "rb") as file:
-                        st.download_button(
-                            label="📥 Download do áudio",
-                            data=file,
-                            file_name=f"{base_filename}.mp3",
-                            mime="audio/mp3"
-                        )
+                # Separador visual
+                st.markdown("---")
+
+                # Área de controle de áudio
+                st.markdown("### 🎵 Reprodução do Áudio")
+
+                if not st.session_state.audio_playing:
+                    if st.button("▶️ Iniciar Reprodução"):
+                        st.session_state.audio_playing = True
+                        st.experimental_rerun()
                 else:
-                    st.error("❌ Erro ao gerar o arquivo de áudio")
+                    # Player de áudio
+                    st.audio(st.session_state.audio_path)
+
+                    # Botão para parar
+                    if st.button("⏹️ Parar Reprodução"):
+                        st.session_state.audio_playing = False
+                        st.experimental_rerun()
+            else:
+                st.error("❌ Erro ao gerar o arquivo de áudio")
 
         except Exception as e:
             st.error(f"❌ Erro durante o processamento: {str(e)}")
@@ -140,28 +162,6 @@ if uploaded_file is not None:
                 os.unlink(pdf_path)
             except:
                 pass
-
-    # Área de controle de áudio
-    if st.session_state.current_audio is not None:
-        st.markdown("### 🎵 Controle de Áudio")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            if not st.session_state.audio_playing:
-                if st.button("▶️ Reproduzir Áudio"):
-                    st.session_state.audio_playing = True
-                    st.experimental_rerun()
-
-        with col2:
-            if st.session_state.audio_playing:
-                if st.button("⏹️ Parar Áudio"):
-                    st.session_state.audio_playing = False
-                    st.experimental_rerun()
-
-        # Player de áudio (só aparece se estiver reproduzindo)
-        if st.session_state.audio_playing:
-            st.audio(st.session_state.audio_path)
 
 # Footer
 st.markdown("---")

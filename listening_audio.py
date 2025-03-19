@@ -105,7 +105,7 @@ class PDFToAudioConverter:
         except Exception as e:
             print(f"❌ Erro ao reproduzir áudio: {str(e)}")
 
-    async def process_pdf(self, pdf_path: str, translate: bool = False) -> None:
+    async def process_pdf(self, pdf_path: str, translate: bool = False, original_filename: str = None) -> None:
         """Processo completo com todas as etapas e barras de progresso."""
         try:
             print(
@@ -125,9 +125,14 @@ class PDFToAudioConverter:
             if not os.path.exists("audios"):
                 os.makedirs("audios")
 
+            # Usar o nome original do arquivo se disponível
+            if original_filename:
+                base_filename = os.path.splitext(original_filename)[0]
+            else:
+                base_filename = os.path.splitext(os.path.basename(pdf_path))[0]
+
             # Salvar o áudio no diretório audios
-            output_audio = os.path.join("audios", os.path.splitext(
-                os.path.basename(pdf_path))[0] + ".mp3")
+            output_audio = os.path.join("audios", base_filename + ".mp3")
 
             print(
                 f"🎯 Arquivo de áudio será salvo como: {os.path.basename(output_audio)}")
