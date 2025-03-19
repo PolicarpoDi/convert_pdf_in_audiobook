@@ -32,14 +32,16 @@ with st.sidebar:
         index=0
     )
 
-    # Velocidade da fala
-    rate = st.slider(
-        "Velocidade da fala",
-        min_value="-50%",
-        max_value="+50%",
-        value="+5%",
-        step="5%"
+    # Velocidade da fala (usando valores numéricos)
+    rate_value = st.slider(
+        "Velocidade da fala (%)",
+        min_value=-50,
+        max_value=50,
+        value=5,
+        step=5
     )
+    # Converter para o formato de string com porcentagem
+    rate = f"{rate_value:+d}%"
 
     # Tamanho do chunk
     chunk_size = st.slider(
