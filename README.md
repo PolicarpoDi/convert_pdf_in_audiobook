@@ -11,13 +11,16 @@ Um conversor de PDF para áudio que utiliza tecnologias modernas para criar audi
 ✅ **Código assíncrono** para melhor desempenho  
 ✅ **Barras de progresso** para acompanhamento em tempo real  
 ✅ **Processamento em chunks** para melhor performance  
-✅ **Informações detalhadas** sobre o processo de conversão
+✅ **Informações detalhadas** sobre o processo de conversão  
+✅ **Interface web amigável** com Streamlit  
+✅ **Player de áudio integrado**  
+✅ **Download do áudio gerado**
 
 ## 📌 Requisitos
 
 ### Dependências Python
 ```bash
-pip install pymupdf deep-translator edge-tts pydub tqdm
+pip install pymupdf deep-translator edge-tts pydub tqdm streamlit
 ```
 
 ### FFmpeg
@@ -34,30 +37,53 @@ sudo apt install ffmpeg
 
 ## 📌 Como Usar
 
-1. **Crie a pasta "pdf" na raiz do projeto e coloque seu PDF desejado**
-2. **Execute o script:**
+### Interface Web (Recomendado)
+
+1. **Instale as dependências:**
 ```bash
-python listening_audio.py
+pip install -r requirements.txt
 ```
 
-### Configurações Personalizadas
+2. **Execute a aplicação web:**
+```bash
+streamlit run app.py
+```
 
-Você pode personalizar o conversor ajustando os parâmetros:
+3. **Acesse a interface:**
+- Abra seu navegador
+- Acesse http://localhost:8501
+
+4. **Use a interface:**
+- Faça upload do arquivo PDF
+- Configure as opções desejadas na barra lateral:
+  - Voz para narração
+  - Velocidade da fala
+  - Tamanho do chunk
+  - Opção de tradução
+- Clique em "Converter PDF para Áudio"
+- Aguarde o processamento
+- Ouça o áudio diretamente no navegador
+- Faça download do arquivo MP3
+
+### Linha de Comando
+
+Se preferir usar via linha de comando:
 
 ```python
+from listening_audio import PDFToAudioConverter
+
 converter = PDFToAudioConverter(
     voice="pt-BR-FranciscaNeural",  # Voz para narração
     rate="+5%",                      # Velocidade da fala
     chunk_size=300                   # Tamanho do chunk para processamento
 )
+
+# Converter sem tradução
+await converter.process_pdf("seu_arquivo.pdf", translate=False)
+
+# Converter com tradução
+await converter.process_pdf("seu_arquivo.pdf", translate=True)
 ```
-
-### Opções Disponíveis
-
-- **Vozes disponíveis:** pt-BR-FranciscaNeural, pt-BR-AntonioNeural, etc.
-- **Taxa de fala:** Ajustável (ex: "+5%", "+10%", "-5%")
-- **Chunk size:** Tamanho do texto processado por vez (recomendado: 300 caracteres)
-- **Tradução:** Opcional (ativada/desativada por flag)
 
 ## 📊 Informações de Processamento
 
