@@ -121,9 +121,12 @@ class PDFToAudioConverter:
             if translate:
                 text = await self.translate_text(text)
 
-            # Criar diretório temporário para o áudio
-            temp_dir = tempfile.mkdtemp()
-            output_audio = os.path.join(temp_dir, os.path.splitext(
+            # Criar diretório audios se não existir
+            if not os.path.exists("audios"):
+                os.makedirs("audios")
+
+            # Salvar o áudio no diretório audios
+            output_audio = os.path.join("audios", os.path.splitext(
                 os.path.basename(pdf_path))[0] + ".mp3")
 
             print(
