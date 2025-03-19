@@ -136,20 +136,40 @@ if uploaded_file is not None:
                 st.markdown("---")
 
                 # Área de controle de áudio
-                st.markdown("### 🎵 Reprodução do Áudio")
+                st.markdown("### 🎵 Controle de Reprodução")
 
-                if not st.session_state.audio_playing:
-                    if st.button("▶️ Iniciar Reprodução"):
-                        st.session_state.audio_playing = True
-                        st.experimental_rerun()
-                else:
-                    # Player de áudio
-                    st.audio(st.session_state.audio_path)
+                # Informações do áudio atual
+                st.info(f"""
+                    📊 Áudio Atual:
+                    - Nome: {os.path.basename(output_audio)}
+                    - Duração: {len(audio) / 1000:.2f} segundos
+                    - Tamanho: {os.path.getsize(output_audio) / 1024:.2f} KB
+                """)
 
-                    # Botão para parar
-                    if st.button("⏹️ Parar Reprodução"):
-                        st.session_state.audio_playing = False
-                        st.experimental_rerun()
+                # Status de reprodução
+                status_emoji = "▶️" if not st.session_state.audio_playing else "⏹️"
+                status_text = "Parado" if not st.session_state.audio_playing else "Reproduzindo"
+                st.markdown(f"**Status:** {status_emoji} {status_text}")
+
+                # Controles de reprodução
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    if not st.session_state.audio_playing:
+                        if st.button("▶️ Iniciar Reprodução", use_container_width=True):
+                            st.session_state.audio_playing = True
+                            st.experimental_rerun()
+
+                with col2:
+                    if st.session_state.audio_playing:
+                        if st.button("⏹️ Parar Reprodução", use_container_width=True):
+                            st.session_state.audio_playing = False
+                            st.experimental_rerun()
+
+                # Player de áudio (só aparece se estiver reproduzindo)
+                if st.session_state.audio_playing:
+                    st.markdown("### 🔊 Player de Áudio")
+                    st.audio(st.session_state.audio_path, format="audio/mp3")
             else:
                 st.error("❌ Erro ao gerar o arquivo de áudio")
 
