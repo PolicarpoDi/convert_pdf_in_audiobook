@@ -77,9 +77,17 @@ class PDFToAudioConverter:
 
             print(f"💾 Salvando arquivo final: {output_audio}")
             combined.export(output_audio, format="mp3")
+
+            # Verificar se o arquivo foi criado e tem tamanho maior que 0
+            if not os.path.exists(output_audio) or os.path.getsize(output_audio) == 0:
+                raise Exception("Falha ao gerar o arquivo de áudio")
+
             print(
                 f"✅ Áudio gerado com sucesso! Tamanho: {os.path.getsize(output_audio) / 1024:.2f} KB")
 
+        except Exception as e:
+            print(f"❌ Erro ao gerar áudio: {str(e)}")
+            raise  # Re-lançar a exceção para tratamento adequado
         finally:
             for temp_file in temp_files:
                 try:
@@ -113,12 +121,19 @@ class PDFToAudioConverter:
             if translate:
                 text = await self.translate_text(text)
 
-            output_audio = os.path.splitext(pdf_path)[0] + ".mp3"
+            # Criar diretório temporário para o áudio
+            temp_dir = tempfile.mkdtemp()
+            output_audio = os.path.join(temp_dir, os.path.splitext(
+                os.path.basename(pdf_path))[0] + ".mp3")
 
             print(
                 f"🎯 Arquivo de áudio será salvo como: {os.path.basename(output_audio)}")
 
             await self.text_to_speech(text, output_audio)
+
+            # Verificar se o arquivo foi criado com sucesso
+            if not os.path.exists(output_audio):
+                raise Exception("Arquivo de áudio não foi gerado corretamente")
 
             end_time = time.time()
             print(
@@ -126,6 +141,16 @@ class PDFToAudioConverter:
 
         except Exception as e:
             print(f"❌ Erro durante o processamento: {str(e)}")
+            raise  # Re-lançar a exceção para que a interface possa tratá-la
+        finally:
+            # Limpar arquivos temporários
+            try:
+                if 'temp_dir' in locals():
+                    for file in os.listdir(temp_dir):
+                        os.remove(os.path.join(temp_dir, file))
+                    os.rmdir(temp_dir)
+            except Exception as e:
+                print(f"⚠️ Erro ao limpar arquivos temporários: {str(e)}")
 
 
 async def main():
